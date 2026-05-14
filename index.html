@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workspace Studio 活用事例</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --card: #ffffff;
+    --border: #e8e8e4;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-muted: #9b9b9b;
+    --meeting-bg: #e8f5ee;
+    --meeting-text: #1a6840;
+    --mail-bg: #e8f0fb;
+    --mail-text: #1a4a8a;
+    --form-bg: #fef3e2;
+    --form-text: #7a4a10;
+    --info-bg: #eeecfd;
+    --info-text: #3d2d9a;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    padding: 20px 16px 32px;
+    min-height: 100vh;
+  }
+
+  .header {
+    margin-bottom: 20px;
+  }
+
+  .header-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .filter-btn {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: #aaa; color: var(--text-primary); }
+  .filter-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  .card-thumb {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+
+  .card-thumb.meeting { background: linear-gradient(135deg, #c8eedd 0%, #e8f5ee 100%); }
+  .card-thumb.mail    { background: linear-gradient(135deg, #c0d8f8 0%, #e8f0fb 100%); }
+  .card-thumb.form    { background: linear-gradient(135deg, #fddfa0 0%, #fef3e2 100%); }
+  .card-thumb.info    { background: linear-gradient(135deg, #d4cffa 0%, #eeecfd 100%); }
+
+  .card-body {
+    padding: 12px 12px 14px;
+  }
+
+  .card-cat {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 99px;
+    display: inline-block;
+    margin-bottom: 7px;
+  }
+
+  .card-cat.meeting { background: var(--meeting-bg); color: var(--meeting-text); }
+  .card-cat.mail    { background: var(--mail-bg);    color: var(--mail-text); }
+  .card-cat.form    { background: var(--form-bg);    color: var(--form-text); }
+  .card-cat.info    { background: var(--info-bg);    color: var(--info-text); }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .card-flow {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+  }
+
+  .flow-step {
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 10px;
+  }
+
+  .flow-arrow {
+    color: var(--text-muted);
+    font-size: 9px;
+  }
+
+  .card-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+    padding-top: 9px;
+  }
+
+  .card-link svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <p class="header-title">活用事例 — Workspace Studio</p>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filter('all', this)">すべて</button>
+  <button class="filter-btn" onclick="filter('meeting', this)">会議・議事録</button>
+  <button class="filter-btn" onclick="filter('mail', this)">メール・通知</button>
+  <button class="filter-btn" onclick="filter('form', this)">申請・フォーム</button>
+  <button class="filter-btn" onclick="filter('info', this)">情報収集</button>
+</div>
+
+<div class="grid" id="grid">
+
+  <a class="card" data-cat="meeting" href="https://www.notion.so/36047ea0cd9c81249c77c3377aea35e9" target="_blank">
+    <div class="card-thumb meeting">✅</div>
+    <div class="card-body">
+      <span class="card-cat meeting">会議・議事録</span>
+      <p class="card-title">会議の決定事項だけをSlackに通知する</p>
+      <div class="card-flow">
+        <span class="flow-step">会議メモ</span><span class="flow-arrow">→</span>
+        <span class="flow-step">AI抽出</span><span class="flow-arrow">→</span>
+        <span class="flow-step">条件分岐</span><span class="flow-arrow">→</span>
+        <span class="flow-step">Slack</span>
+      </div>
+      <div class="card-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        設定手順を見る
+      </div>
+    </div>
+  </a>
+
+  <a class="card" data-cat="meeting" href="https://www.notion.so/36047ea0cd9c81469bdcec03a685bd92" target="_blank">
+    <div class="card-thumb meeting">📋</div>
+    <div class="card-body">
+      <span class="card-cat meeting">会議・議事録</span>
+      <p class="card-title">会議後タスクをGoogle Tasksに登録→担当者にDM通知</p>
+      <div class="card-flow">
+        <span class="flow-step">会議終了</span><span class="flow-arrow">→</span>
+        <span class="flow-step">タスク抽出</span><span class="flow-arrow">→</span>
+        <span class="flow-step">Tasks</span><span class="flow-arrow">→</span>
+        <span class="flow-step">DM</span>
+      </div>
+      <div class="card-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        設定手順を見る
+      </div>
+    </div>
+  </a>
+
+  <a class="card" data-cat="mail" href="https://www.notion.so/36047ea0cd9c81fa9bcaecf68341cc0a" target="_blank">
+    <div class="card-thumb mail">📧</div>
+    <div class="card-body">
+      <span class="card-cat mail">メール・通知</span>
+      <p class="card-title">未読メールを毎朝要約してSlack DMに送る</p>
+      <div class="card-flow">
+        <span class="flow-step">定時起動</span><span class="flow-arrow">→</span>
+        <span class="flow-step">未読取得</span><span class="flow-arrow">→</span>
+        <span class="flow-step">AI要約</span><span class="flow-arrow">→</span>
+        <span class="flow-step">DM</span>
+      </div>
+      <div class="card-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        設定手順を見る
+      </div>
+    </div>
+  </a>
+
+  <a class="card" data-cat="mail" href="https://www.notion.so/36047ea0cd9c81948cafd98e15c354b2" target="_blank">
+    <div class="card-thumb mail">🔔</div>
+    <div class="card-body">
+      <span class="card-cat mail">メール・通知</span>
+      <p class="card-title">特定ドメインのメールを即時Slackに通知する</p>
+      <div class="card-flow">
+        <span class="flow-step">受信</span><span class="flow-arrow">→</span>
+        <span class="flow-step">ドメイン判定</span><span class="flow-arrow">→</span>
+        <span class="flow-step">条件分岐</span><span class="flow-arrow">→</span>
+        <span class="flow-step">Slack</span>
+      </div>
+      <div class="card-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        設定手順を見る
+      </div>
+    </div>
+  </a>
+
+  <a class="card" data-cat="form" href="https://www.notion.so/36047ea0cd9c814096b5c33e21cda28b" target="_blank">
+    <div class="card-thumb form">📝</div>
+    <div class="card-body">
+      <span class="card-cat form">申請・フォーム</span>
+      <p class="card-title">Sheetsに行追加→担当者にSlackメンション通知</p>
+      <div class="card-flow">
+        <span class="flow-step">フォーム回答</span><span class="flow-arrow">→</span>
+        <span class="flow-step">Sheets</span><span class="flow-arrow">→</span>
+        <span class="flow-step">@メンション</span>
+      </div>
+      <div class="card-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        設定手順を見る
+      </div>
+    </div>
+  </a>
+
+  <a class="card" data-cat="info" href="https://www.notion.so/36047ea0cd9c819f9293d5994e7915e9" target="_blank">
+    <div class="card-thumb info">🔍</div>
+    <div class="card-body">
+      <span class="card-cat info">情報収集</span>
+      <p class="card-title">業界ニュースを毎朝収集してSlack DMに配信</p>
+      <div class="card-flow">
+        <span class="flow-step">定時起動</span><span class="flow-arrow">→</span>
+        <span class="flow-step">ウェブ検索</span><span class="flow-arrow">→</span>
+        <span class="flow-step">Gemini要約</span><span class="flow-arrow">→</span>
+        <span class="flow-step">DM</span>
+      </div>
+      <div class="card-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        設定手順を見る
+      </div>
+    </div>
+  </a>
+
+  <a class="card" data-cat="info" href="https://www.notion.so/36047ea0cd9c81dba34bf45d6bc3796a" target="_blank">
+    <div class="card-thumb info">🏷️</div>
+    <div class="card-body">
+      <span class="card-cat info">情報収集</span>
+      <p class="card-title">特定キーワードを含むメールだけSlackに通知する</p>
+      <div class="card-flow">
+        <span class="flow-step">受信</span><span class="flow-arrow">→</span>
+        <span class="flow-step">キーワード判定</span><span class="flow-arrow">→</span>
+        <span class="flow-step">条件分岐</span><span class="flow-arrow">→</span>
+        <span class="flow-step">Slack</span>
+      </div>
+      <div class="card-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        設定手順を見る
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<script>
+function filter(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.card').forEach(card => {
+    if (cat === 'all' || card.dataset.cat === cat) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+</script>
+</body>
+</html>
